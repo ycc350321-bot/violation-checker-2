@@ -1,0 +1,41 @@
+name: Build Windows EXE
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Ensure pip & upgrade
+        run: |
+          python -m ensurepip
+          python -m pip install --upgrade pip
+
+      - name: Install PyInstaller
+        run: |
+          pip install pyinstaller
+
+      - name: Build exe with PyInstaller
+        run: |
+          pyinstaller --onefile --noconsole "没有文本框4.py"
+      
+      - name: List dist
+        run: dir dist
+
+      - name: Upload exe artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: violation-checker-exe
+          path: dist/*.exe
